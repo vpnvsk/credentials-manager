@@ -17,6 +17,16 @@ import (
 	"github.com/vpnvsk/p_s/pkg/service"
 )
 
+// @title Credentials Manager API
+// @version 1.0
+// @description API Server for Credentials Manager Application
+
+// @host localhost:8000
+// @BasePath /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 
 	if err := initConfig(); err != nil {
@@ -44,7 +54,7 @@ func main() {
 	srv := new(p_s.Server)
 	go func() {
 		if err := srv.Run(viper.GetString("port"), handler.InitRoutes()); err != nil {
-			logrus.Fatalf("error while starting server %s", err.Error())
+			logrus.Fatalf("error while running server %s", err.Error())
 		}
 	}()
 	quit := make(chan os.Signal, 1)
@@ -53,7 +63,9 @@ func main() {
 	if err = srv.ShutDown(context.Background()); err != nil {
 		logrus.Errorf("error while shuting down: %s", err.Error())
 	}
-	db.Close()
+	if err := db.Close(); err != nil {
+		logrus.Errorf("error occured on db connection close: %s", err.Error())
+	}
 }
 
 func initConfig() error {

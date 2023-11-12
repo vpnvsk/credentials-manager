@@ -7,7 +7,19 @@ import (
 	"github.com/vpnvsk/p_s/internal/models"
 )
 
-func (h *Handler) signIn(c *gin.Context) {
+// @Summary SignUp
+// @Tags Auth
+// @Description create account
+// @ID create-account
+// @Accept  json
+// @Produce  json
+// @Param input body models.User true "account info"
+// @Success 200 {id} uuid.UUID
+// @Failure 400,404 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /auth/sign-up [post]
+func (h *Handler) signUp(c *gin.Context) {
 	var input models.User
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -24,13 +36,20 @@ func (h *Handler) signIn(c *gin.Context) {
 	})
 }
 
-type AuthLogIn struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
+// @Summary LogIn
+// @Tags Auth
+// @Description login
+// @ID login
+// @Accept  json
+// @Produce  json
+// @Param input body models.AuthLogIn true "credentials"
+// @Success 200 {string} string "token"
+// @Failure 400,404 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /auth/log-in [post]
 func (h *Handler) logIn(c *gin.Context) {
-	var input AuthLogIn
+	var input models.AuthLogIn
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
