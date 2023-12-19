@@ -14,25 +14,25 @@ import (
 // @ID create-password
 // @Accept  json
 // @Produce  json
-// @Param input body models.PS true "credentials info"
+// @Param input body models.Credentials true "credentials info"
 // @Success 200 {uuid} uuid.UUID "uuid"
 // @Failure 400,403,404 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /api/ps [post]
-func (h *Handler) createPS(c *gin.Context) {
+func (h *Handler) createCredentials(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	var input models.PS
+	var input models.Credentials
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
-	id, err := h.services.PS.CreatePS(userId, input)
+	id, err := h.services.Credentials.CreateCredentials(userId, input)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -43,8 +43,8 @@ func (h *Handler) createPS(c *gin.Context) {
 	})
 }
 
-type getAllPSResponse struct {
-	Data []models.PSList `json:"data"`
+type getAllCredentialsResponse struct {
+	Data []models.CredentialsList `json:"data"`
 }
 
 // @Summary Get all credentials
@@ -54,23 +54,23 @@ type getAllPSResponse struct {
 // @ID get-all-password
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} getAllPSResponse
+// @Success 200 {object} getAllCredentialsResponse
 // @Failure 400,403,404 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /api/ps [get]
-func (h *Handler) getAllPS(c *gin.Context) {
+func (h *Handler) getAllCredentials(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	list, err := h.services.PS.GetAllPS(userId)
+	list, err := h.services.Credentials.GetAllCredentials(userId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, getAllPSResponse{
+	c.JSON(http.StatusOK, getAllCredentialsResponse{
 		Data: list,
 	})
 
@@ -83,12 +83,12 @@ func (h *Handler) getAllPS(c *gin.Context) {
 // @ID get-password-by-id
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} models.PSItem
+// @Success 200 {object} models.CredentialsItemGet
 // @Failure 400,404 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /api/ps/:id [get]
-func (h *Handler) getPSById(c *gin.Context) {
+func (h *Handler) getCredentialsById(c *gin.Context) {
 	id := c.Param("id")
 
 	psId, err := uuid.Parse(id)
@@ -101,7 +101,7 @@ func (h *Handler) getPSById(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	item, err := h.services.PS.GetPSByID(userId, psId)
+	item, err := h.services.Credentials.GetCredentialsByID(userId, psId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -116,13 +116,13 @@ func (h *Handler) getPSById(c *gin.Context) {
 // @ID update-credentials
 // @Accept  json
 // @Produce  json
-// @Param input body models.PSItemUpdate true "credentials info"
+// @Param input body models.CredentialsItemUpdate true "credentials info"
 // @Success 200 {string} string ok
 // @Failure 400,403,404 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /api/ps/:id [put]
-func (h *Handler) updatePS(c *gin.Context) {
+func (h *Handler) updateCredentials(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -136,12 +136,12 @@ func (h *Handler) updatePS(c *gin.Context) {
 		newErrorResponse(c, http.StatusBadRequest, "Invalid ID format")
 		return
 	}
-	var input models.PSItemUpdate
+	var input models.CredentialsItemUpdate
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := h.services.UpdatePS(userId, psId, input); err != nil {
+	if err := h.services.UpdateCredentials(userId, psId, input); err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -160,7 +160,7 @@ func (h *Handler) updatePS(c *gin.Context) {
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
 // @Router /api/ps/:id [delete]
-func (h *Handler) deletePS(c *gin.Context) {
+func (h *Handler) deleteCredentials(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -175,7 +175,7 @@ func (h *Handler) deletePS(c *gin.Context) {
 		return
 	}
 
-	err = h.services.DeletePS(userId, psId)
+	err = h.services.DeleteCredentials(userId, psId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

@@ -16,7 +16,7 @@ func TestPSPostgres_CreatePS(t *testing.T) {
 	}
 	defer db.Close()
 
-	r := NewPSPostgres(db)
+	r := NewCredentialsPostgres(db)
 
 	knownUUID, err := uuid.Parse("00000000-0000-0000-0000-000000000001")
 	if err != nil {
@@ -25,7 +25,7 @@ func TestPSPostgres_CreatePS(t *testing.T) {
 
 	type args struct {
 		userId uuid.UUID
-		ps     models.PS
+		ps     models.Credentials
 	}
 	type mockBehavior func(args args, id uuid.UUID)
 
@@ -40,7 +40,7 @@ func TestPSPostgres_CreatePS(t *testing.T) {
 			name: "Ok",
 			input: args{
 				userId: knownUUID,
-				ps: models.PS{
+				ps: models.Credentials{
 					Title:       "test title",
 					Userlogin:   "test login",
 					Password:    "test_password",
@@ -65,7 +65,7 @@ func TestPSPostgres_CreatePS(t *testing.T) {
 			name: "Empty Fields",
 			input: args{
 				userId: knownUUID,
-				ps: models.PS{
+				ps: models.Credentials{
 					Title:       "",
 					Userlogin:   "test login",
 					Password:    "test_password",
@@ -87,7 +87,7 @@ func TestPSPostgres_CreatePS(t *testing.T) {
 			name: "Failed 2nd Insert",
 			input: args{
 				userId: knownUUID,
-				ps: models.PS{
+				ps: models.Credentials{
 					Title:       "test title",
 					Userlogin:   "test login",
 					Password:    "test_password",
@@ -114,7 +114,7 @@ func TestPSPostgres_CreatePS(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock(tt.input, tt.want)
 
-			got, err := r.CreatePS(tt.input.userId, tt.input.ps)
+			got, err := r.CreateCredentials(tt.input.userId, tt.input.ps)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -133,7 +133,7 @@ func TestPSPostgres_GetAllPS(t *testing.T) {
 	}
 	defer db.Close()
 
-	r := NewPSPostgres(db)
+	r := NewCredentialsPostgres(db)
 
 	id1, err := uuid.Parse("00000000-0000-0000-0000-000000000001")
 	if err != nil {
@@ -157,7 +157,7 @@ func TestPSPostgres_GetAllPS(t *testing.T) {
 		name    string
 		mock    func()
 		input   args
-		want    []models.PSList
+		want    []models.CredentialsList
 		wantErr bool
 	}{
 		{
@@ -175,7 +175,7 @@ func TestPSPostgres_GetAllPS(t *testing.T) {
 			input: args{
 				userId: id1,
 			},
-			want: []models.PSList{
+			want: []models.CredentialsList{
 				{id1, "title1", "description1"},
 				{id2, "title2", "description2"},
 				{id3, "title3", "description3"},
@@ -197,7 +197,7 @@ func TestPSPostgres_GetAllPS(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
-			got, err := r.GetAllPS(tt.input.userId)
+			got, err := r.GetAllCredentials(tt.input.userId)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -222,7 +222,7 @@ func TestPSPostgres_GetPSByID(t *testing.T) {
 		t.Fatalf("error generating known UUID: %v", err)
 	}
 
-	r := NewPSPostgres(db)
+	r := NewCredentialsPostgres(db)
 	type args struct {
 		userID uuid.UUID
 		psID   uuid.UUID
@@ -231,7 +231,7 @@ func TestPSPostgres_GetPSByID(t *testing.T) {
 		name    string
 		mock    func()
 		input   args
-		want    models.PSItem
+		want    models.CredentialsItemGet
 		wantErr bool
 	}{
 		{
@@ -246,7 +246,7 @@ func TestPSPostgres_GetPSByID(t *testing.T) {
 				userID: id1,
 				psID:   id1,
 			},
-			want: models.PSItem{"title1", "description1"},
+			want: models.CredentialsItemGet{"title1", "description1"},
 		},
 		{
 			name: "Not found",
@@ -266,7 +266,7 @@ func TestPSPostgres_GetPSByID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.mock()
-			get, err := r.GetPSByID(tt.input.userID, tt.input.psID)
+			get, err := r.GetCredentialsByID(tt.input.userID, tt.input.psID)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

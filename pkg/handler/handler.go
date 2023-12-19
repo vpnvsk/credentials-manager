@@ -32,11 +32,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		ps := api.Group("/ps")
 		{
-			ps.POST("/", h.createPS)
-			ps.GET("/", h.getAllPS)
-			ps.GET("/:id", h.getPSById)
-			ps.PUT("/:id", h.updatePS)
-			ps.DELETE("/:id", h.deletePS)
+			ps.POST("/", h.createCredentials)
+			ps.GET("/", h.getAllCredentials)
+			ps.GET("/:id", h.getCredentialsById)
+			ps.PUT("/:id", h.updateCredentials)
+			ps.DELETE("/:id", h.deleteCredentials)
 
 		}
 

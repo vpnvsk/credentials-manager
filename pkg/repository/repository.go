@@ -10,21 +10,21 @@ type Authorization interface {
 	CreateUser(user models.User) (uuid.UUID, error)
 	GetUser(username, password string) (models.User, error)
 }
-type PS interface {
-	CreatePS(userId uuid.UUID, ps models.PS) (uuid.UUID, error)
-	GetAllPS(userId uuid.UUID) ([]models.PSList, error)
-	GetPSByID(userId, psId uuid.UUID) (models.PSItem, error)
-	DeletePS(userId, psId uuid.UUID) error
-	UpdatePS(userId, psId uuid.UUID, input models.PSItemUpdate) error
+type Credentials interface {
+	CreateCredentials(userId uuid.UUID, ps models.Credentials) (uuid.UUID, error)
+	GetAllCredentials(userId uuid.UUID) ([]models.CredentialsList, error)
+	GetCredentialsByID(userId, psId uuid.UUID) (models.CredentialsItemGet, error)
+	DeleteCredentials(userId, psId uuid.UUID) error
+	UpdateCredentials(userId, psId uuid.UUID, input models.CredentialsItemUpdate) error
 }
 type Repository struct {
 	Authorization
-	PS
+	Credentials
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
-		PS:            NewPSPostgres(db),
+		Credentials:   NewCredentialsPostgres(db),
 	}
 }

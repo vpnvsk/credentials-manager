@@ -10,15 +10,15 @@ import (
 	"github.com/vpnvsk/p_s/internal/models"
 )
 
-type PSPostgres struct {
+type CredentialsPostgres struct {
 	db *sqlx.DB
 }
 
-func NewPSPostgres(db *sqlx.DB) *PSPostgres {
-	return &PSPostgres{db: db}
+func NewCredentialsPostgres(db *sqlx.DB) *CredentialsPostgres {
+	return &CredentialsPostgres{db: db}
 }
 
-func (r *PSPostgres) CreatePS(userId uuid.UUID, ps models.PS) (uuid.UUID, error) {
+func (r *CredentialsPostgres) CreateCredentials(userId uuid.UUID, ps models.Credentials) (uuid.UUID, error) {
 
 	tx, err := r.db.Begin()
 	if err != nil {
@@ -46,8 +46,8 @@ func (r *PSPostgres) CreatePS(userId uuid.UUID, ps models.PS) (uuid.UUID, error)
 
 	return psId, tx.Commit()
 }
-func (r *PSPostgres) GetAllPS(userId uuid.UUID) ([]models.PSList, error) {
-	var list []models.PSList
+func (r *CredentialsPostgres) GetAllCredentials(userId uuid.UUID) ([]models.CredentialsList, error) {
+	var list []models.CredentialsList
 	query := fmt.Sprintf(
 		"SELECT ps.id, ps.title, ps.description FROM %s ps JOIN %s ui ON ps.id=ui.list_id WHERE ui.user_id=$1",
 		psTable, userPsTable)
@@ -55,22 +55,22 @@ func (r *PSPostgres) GetAllPS(userId uuid.UUID) ([]models.PSList, error) {
 	return list, err
 }
 
-func (r *PSPostgres) GetPSByID(userID, psID uuid.UUID) (models.PSItem, error) {
-	var m models.PSItem
+func (r *CredentialsPostgres) GetCredentialsByID(userID, psID uuid.UUID) (models.CredentialsItemGet, error) {
+	var m models.CredentialsItemGet
 	query := fmt.Sprintf(
 		"SELECT ps.userlogin, ps.password_hash FROM %s ps JOIN %s ui on ps.id=ui.list_id WHERE ui.user_id=$1 and ps.id=$2",
 		psTable, userPsTable)
 	err := r.db.Get(&m, query, userID, psID)
 	return m, err
 }
-func (r *PSPostgres) DeletePS(userId, psId uuid.UUID) error {
+func (r *CredentialsPostgres) DeleteCredentials(userId, psId uuid.UUID) error {
 	query := fmt.Sprintf(
 		"DELETE FROM %s ps USING %s ul WHERE ps.id = ul.list_id AND ul.user_id=$1 AND ul.list_id=$2",
 		psTable, userPsTable)
 	_, err := r.db.Exec(query, userId, psId)
 	return err
 }
-func (r *PSPostgres) UpdatePS(userId, psId uuid.UUID, input models.PSItemUpdate) error {
+func (r *CredentialsPostgres) UpdateCredentials(userId, psId uuid.UUID, input models.CredentialsItemUpdate) error {
 	setValues := make([]string, 0)
 	args := make([]interface{}, 0)
 	argId := 1

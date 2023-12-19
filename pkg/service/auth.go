@@ -3,13 +3,12 @@ package service
 import (
 	"errors"
 	"fmt"
-	"time"
-
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"github.com/vpnvsk/p_s/internal/lib"
 	"github.com/vpnvsk/p_s/internal/models"
 	"github.com/vpnvsk/p_s/pkg/repository"
+	"time"
 )
 
 type tokenClaims struct {
