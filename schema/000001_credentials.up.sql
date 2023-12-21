@@ -1,4 +1,6 @@
-CREATE TABLE ps_item
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE credentials
 (
     id              UUID DEFAULT uuid_generate_v4() PRIMARY KEY UNIQUE,
     title           varchar(255) not null UNIQUE,
@@ -7,9 +9,9 @@ CREATE TABLE ps_item
     description     varchar(255)
 );
 
-CREATE TABLE users_item
+CREATE TABLE users_credentials
 (
     id              UUID DEFAULT uuid_generate_v4() PRIMARY KEY UNIQUE,
-    user_id         UUID references users (id) on delete cascade not null,
-    list_id         UUID references ps_item (id) on delete cascade not null
+    user_id         UUID not null,
+    list_id         UUID references credentials (id) on delete cascade not null
 );

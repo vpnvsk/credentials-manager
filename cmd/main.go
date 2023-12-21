@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -46,8 +48,20 @@ func main() {
 	if err != nil {
 		logrus.Fatalf("Failed to connect to database:%s", err.Error())
 	}
-	serviceConfig := service.ServiceConfig{}
-	serviceConfig.SetFields(os.Getenv("salt"), os.Getenv("signingKey"), os.Getenv("key"), 2*time.Hour)
+	serviceConfig := service.Config{}
+	strAppId, err := strconv.ParseInt(os.Getenv("appId"), 10, 32)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	appId := int32(strAppId)
+	serviceConfig.SetFields(
+		os.Getenv("salt"),
+		os.Getenv("signingKey"),
+		os.Getenv("key"),
+		2*time.Hour,
+		appId,
+	)
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos, serviceConfig)
 	handler := handl.NewHandler(services)

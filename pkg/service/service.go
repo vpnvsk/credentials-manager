@@ -8,8 +8,6 @@ import (
 )
 
 type Authorization interface {
-	CreateUser(u models.User) (uuid.UUID, error)
-	GenerateToken(username, password string) (string, error)
 	ParseToken(token string) (uuid.UUID, error)
 }
 type Credentials interface {
@@ -23,23 +21,25 @@ type Service struct {
 	Authorization
 	Credentials
 }
-type ServiceConfig struct {
+type Config struct {
 	salt       string
 	signingKey string
 	tokenTTL   time.Duration
 	encryptKey []byte
+	appId      int32
 }
 
-func (s *ServiceConfig) SetFields(salt, signingKey, encryptKey string, tokenTTL time.Duration) {
+func (s *Config) SetFields(salt, signingKey, encryptKey string, tokenTTL time.Duration, appId int32) {
 	s.salt = salt
 	s.signingKey = signingKey
 	s.tokenTTL = tokenTTL
 	s.encryptKey = []byte(encryptKey)
+	s.appId = appId
 }
 
-func NewService(r *repository.Repository, cfg ServiceConfig) *Service {
+func NewService(r *repository.Repository, cfg Config) *Service {
 	return &Service{
-		Authorization: NewAuthService(r.Authorization, cfg),
+		Authorization: NewAuthService(cfg),
 		Credentials:   NewCredentialsService(r.Credentials, cfg),
 	}
 }

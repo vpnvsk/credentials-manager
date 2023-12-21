@@ -9,10 +9,10 @@ import (
 
 type CredentialsService struct {
 	repo repository.Credentials
-	cfg  ServiceConfig
+	cfg  Config
 }
 
-func NewCredentialsService(repo repository.Credentials, cfg ServiceConfig) *CredentialsService {
+func NewCredentialsService(repo repository.Credentials, cfg Config) *CredentialsService {
 	return &CredentialsService{
 		repo: repo,
 		cfg:  cfg,
